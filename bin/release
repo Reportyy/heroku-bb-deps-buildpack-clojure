@@ -1,0 +1,27 @@
+
+#!/usr/bin/env bash
+# bin/release <build-dir>
+
+export BUILD_DIR=$1
+
+# Java opts
+javaOpts=${JAVA_OPTS}
+
+j_Opts=""
+
+if [[ -n $javaOpts ]]
+then
+  # Split Java opts into an array and prepend -J to each opt
+  read -ra optsArray <<< $javaOpts
+  j_Opts=$(for j in "${optsArray[@]}" ; do echo "-J$j" ; done)
+fi
+
+
+if [ ! -f $BUILD_DIR/Procfile ]; then
+  cat <<EOF
+---
+config_vars:
+default_process_types:
+EOF
+    echo "  web: java $j_Opts -jar $TARGET_JAR"
+fi
